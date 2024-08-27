@@ -1,9 +1,11 @@
-version: 0.0
-Resources:
-  - TargetService:
-      Type: AWS::ECS::Service
-      Properties:
-        TaskDefinition: "TASK_DEFINITION_ARN"
-        LoadBalancerInfo:
-          ContainerName: "web"
-          ContainerPort: "8080"
+version: 0.1
+os: linux
+files:
+  - source: /
+    destination: /var/hello-world
+file_exists_behavior: OVERWRITE
+hooks:
+  ApplicationStart:
+    - location: scripts/create_test_db.sh
+      timeout: 300
+      runas: root
