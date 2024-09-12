@@ -1,55 +1,50 @@
-[![GHCR Build Status](https://github.com/infrastructure-as-code/docker-hello-world/actions/workflows/ghcr.yml/badge.svg?branch=master)](https://github.com/infrastructure-as-code/docker-hello-world/actions/workflows/ghcr.yml)
-[![Docker Hub Build Status](https://github.com/infrastructure-as-code/docker-hello-world/actions/workflows/dockerhub.yml/badge.svg?branch=master)](https://github.com/infrastructure-as-code/docker-hello-world/actions/workflows/dockerhub.yml)
+# React + TypeScript + Vite
 
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-# ghcr.io/infrastructure-as-code/hello-world
+Currently, two official plugins are available:
 
-A [Prometheus](https://prometheus.io/)-instrumented Docker "Hello World" web server.  This image began life as [infrastructureascode/hello-world](https://hub.docker.com/r/infrastructureascode/hello-world) on Docker Hub, and is now also available on the GitHub Container Registry as `ghcr.io/infrastructure-as-code/hello-world`.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
+## Expanding the ESLint configuration
 
-## Images
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-| Registry Name | Image Name |
-|---------------|------------|
-| GitHub Container Registry | `ghcr.io/infrastructure-as-code/hello-world` |
-| Docker Hub | `infrastructureascode/hello-world` |
+- Configure the top-level `parserOptions` property like this:
 
-
-## Features
-
-1. Always returns a HTTP 200 status code and a "Hello, World!" message at the `/` path.
-1. Has a metrics endpoint at `/metrics` that returns Prometheus metrics.
-1. Has a health check endpoint, `/health`, that returns an empty response and a HTTP 200 response.
-
-## Building
-
-```
-docker build --rm -t ghcr.io/infrastructure-as-code/hello-world .
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
 
-## Releases
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-Images are [built with GitHub Actions](https://github.com/infrastructure-as-code/docker-hello-world/actions/workflows/build-images.yml) upon tagging/push, and pushed directly to the GitHub Container Registry.  You can look at the [packages page](https://github.com/infrastructure-as-code/docker-hello-world/pkgs/container/hello-world) for the latest tagged version.
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
 
-Additionally, the `sha1sum` of the binary in each image is emitted during the build process (look for "Show binary info") in the build logs in case provenance is a concern.
-
-
-## Usage
-
-```
-# start the container
-docker run \
-  --detach \
-  --name hello-world \
-  --publish 8000:8080 \
-  ghcr.io/infrastructure-as-code/hello-world
-
-# curl the container
-curl http://0.0.0.0:8000/
-
-# curl the health check endpoint which returns an empty response
-curl http://0.0.0.0:8000/health
-
-# curl Prometheus metrics
-curl http://0.0.0.0:8000/metrics
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
 ```
