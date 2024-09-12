@@ -46,10 +46,13 @@ func setupRouter(routePrefix string) *gin.Engine {
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	})
+	router.LoadHTMLFiles("index.html")
 	router.GET("/health", healthFunc)
 
 	rg := router.Group(routePrefix)
-	rg.GET("/", helloFunc)
+	rg.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
 	rg.GET("/version", versionFunc)
 	return router
 }
