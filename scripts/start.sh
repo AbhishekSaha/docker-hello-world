@@ -2,7 +2,6 @@
 
 cd /var/hello-world
 sudo docker system prune -a -f
-sudo systemctl start ecs
-sudo systemctl status ecs
-docker build --platform=linux/arm64 -t docker-hello-world:latest .
+
+docker build -t docker-hello-world:latest .
 docker run --platform=linux/arm64 -p 8080:8080 -d docker-hello-world:latest

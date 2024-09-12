@@ -8,7 +8,8 @@ RUN npm install
 
 COPY . .
 
-CMD [ "npm", "run", "dev" ]
+RUN [ "npm", "run", "build" ]
+COPY . .
 
 FROM busybox:1.35
 RUN adduser -D static
